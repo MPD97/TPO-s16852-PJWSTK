@@ -1,0 +1,28 @@
+/**
+ *
+ *  @author Ambroziak Mateusz S16852
+ *
+ */
+
+package zad1;
+
+
+public class Main {
+  public static void main(String[] args) {
+    Service s = new Service("Kanada");
+    String weatherJson = s.getWeather("Toronto");
+    Double rate1 = s.getRateFor("USD");
+    Double rate2;
+	try {
+		rate2 = s.getNBPRate();
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+    
+    System.out.println("weatherJson:" + weatherJson);
+    System.out.println("rate1: " + rate1);
+    System.out.println("rate2: " + rate2);
+    // ...
+    // część uruchamiająca GUI
+  }
+}

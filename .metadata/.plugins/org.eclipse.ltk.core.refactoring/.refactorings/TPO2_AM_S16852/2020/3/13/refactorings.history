@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename field &apos;_cuntry&apos; in &apos;zad1.Service&apos; to &apos;_country&apos;&#x0D;&#x0A;- Original project: &apos;TPO2_AM_S16852&apos;&#x0D;&#x0A;- Original element: &apos;zad1.Service._cuntry&apos;&#x0D;&#x0A;- Renamed element: &apos;zad1.Service._country&apos;&#x0D;&#x0A;- Update references to refactored element&#x0D;&#x0A;- Update textual occurrences in comments and strings" delegate="false" deprecate="false" description="Rename field &apos;_cuntry&apos;" flags="589826" getter="false" id="org.eclipse.jdt.ui.rename.field" input="/src&lt;zad1{Service.java[Service^_cuntry" name="_country" references="true" setter="false" stamp="1585034159238" textual="false" version="1.0"/>
+</session>

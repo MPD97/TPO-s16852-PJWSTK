@@ -1,0 +1,66 @@
+package zad1;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javafx.application.Platform;
+import javafx.collections.ObservableList;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.TextField;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+import javafx.stage.Stage;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
+import com.sun.javafx.application.PlatformImpl;
+
+public class SwingFXView extends JPanel {  
+    
+   private Stage stage;  
+   private JFXPanel jfxPanel;  
+ 
+   public SwingFXView(){  
+       initComponents();  
+   }  
+ 
+    
+   private void initComponents(){  
+        
+       jfxPanel = new JFXPanel();  
+       createScene();  
+        
+       setLayout(new BorderLayout());  
+       add(jfxPanel, BorderLayout.CENTER);  
+        
+   }     
+    
+   private void createScene() {  
+       PlatformImpl.startup(new Runnable() {  
+           @Override
+           public void run() {  
+                
+               stage = new Stage();  
+                
+               stage.setTitle("Wiki interface");  
+               stage.setResizable(true);  
+  
+               Group root = new Group();  
+               Scene scene = new Scene(root,80,20);  
+               stage.setScene(scene);  
+                
+               ObservableList<Node> children = root.getChildren();
+               final TextField name = new TextField();
+               name.setPromptText("Enter your first name.");
+               name.setPrefColumnCount(100);
+               children.add(name);
+               jfxPanel.setScene(scene);  
+           }  
+       });  
+   }
+}

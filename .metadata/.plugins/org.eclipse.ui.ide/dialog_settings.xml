@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="ExternalProjectImportWizard">
+		<item key="WizardProjectsImportPage.STORE_NESTED_PROJECTS" value="true"/>
+		<item key="WizardProjectsImportPage.STORE_COPY_PROJECT_ID" value="true"/>
+		<item key="WizardProjectsImportPage.STORE_ARCHIVE_SELECTED" value="true"/>
+		<list key="WizardProjectsImportPage.STORE_DIRECTORIES">
+			<item value=""/>
+		</list>
+		<list key="WizardProjectsImportPage.STORE_ARCHIVES">
+			<item value="C:\Users\admin\Downloads\TPO2_AM_S16852.zip"/>
+			<item value="C:\Users\admin\Desktop\TPO1_AM_S16852.zip"/>
+			<item value="C:\Users\admin\Downloads\UTP4_JW_S17082.zip"/>
+			<item value="C:\Users\admin\Downloads\UTP4_AM_S16852.zip"/>
+			<item value="C:\Users\admin\Downloads\UTP2_AM_S16852.zip"/>
+		</list>
+	</section>
+	<section name="ChooseWorkspaceDialogSettings">
+		<item key="DIALOG_X_ORIGIN" value="528"/>
+		<item key="DIALOG_Y_ORIGIN" value="516"/>
+	</section>
+	<section name="NewWizardAction">
+		<item key="NewWizardSelectionPage.STORE_SELECTED_ID" value="org.eclipse.ui.wizards.new.project"/>
+		<list key="NewWizardSelectionPage.STORE_EXPANDED_CATEGORIES_ID">
+			<item value="org.eclipse.ui.Basic"/>
+			<item value="org.eclipse.jdt.ui.java"/>
+		</list>
+	</section>
+	<section name="BasicNewProjectResourceWizard">
+	</section>
+</section>

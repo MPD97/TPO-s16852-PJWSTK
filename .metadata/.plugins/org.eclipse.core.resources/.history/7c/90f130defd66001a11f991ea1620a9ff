@@ -1,0 +1,39 @@
+/**
+ *
+ *  @author Ambroziak Mateusz S16852
+ *
+ */
+
+package zad1;
+
+import java.io.IOException;
+
+public class Main {
+  public static void main(String[] args) {
+    Service s = new Service("Kanada");
+    String weatherJson = null;
+	try {
+		weatherJson = s.getWeather("Toronto");
+	} catch (IOException e2) {
+		e2.printStackTrace();
+	}
+    Double rate1 = null;
+	try {
+		rate1 = s.getRateFor("USD");
+	} catch (GetRateForException e1) {
+		e1.printStackTrace();
+	}
+    Double rate2 = null;
+	try {
+		rate2 = s.getNBPRate();
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+    
+    System.out.println("weatherJson:" + weatherJson);
+    System.out.println("rate for: " + rate1);
+    System.out.println("NBP rate: " + rate2);
+    // ...
+    // część uruchamiająca GUI
+  }
+}

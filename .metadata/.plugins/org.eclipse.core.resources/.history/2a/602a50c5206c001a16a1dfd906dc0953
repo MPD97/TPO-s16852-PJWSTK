@@ -1,0 +1,28 @@
+/**
+ *
+ *  @author Ambroziak Mateusz S16852
+
+ *
+ */
+
+package zad1;
+
+import java.awt.Dimension;
+
+import javax.swing.JFrame;
+
+public class Main {
+  public static void main(String[] args) {
+    String dirName = System.getProperty("user.home")+"/TPO1dir";
+    String resultFileName = "TPO1res.txt";
+    Futil.processDir(dirName, resultFileName);
+    
+    final JFrame frame = new JFrame();  
+    
+    frame.getContentPane().add(new SwingFXWebWiew());  
+     
+    frame.setMinimumSize(new Dimension(640, 480));  
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
+    frame.setVisible(true);  
+  }
+}

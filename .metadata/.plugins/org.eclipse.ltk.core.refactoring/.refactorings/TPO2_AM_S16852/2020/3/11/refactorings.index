@@ -1,0 +1,7 @@
+1584274356819	Rename local variable 'ApiCall'
+1584275778406	Delete element
+1584275981264	Delete element
+1584275985243	Delete element
+1584277619108	Extract method 'GetCurrencyFromNBP'
+1584286579328	Rename field 'wheatherApiKey'
+1584298959195	Rename field 'NBPA'

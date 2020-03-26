@@ -1,0 +1,183 @@
+/**
+ *
+ *  @author Ambroziak Mateusz S16852
+ *
+ */
+
+package zad1;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Currency;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+public class Service {
+	
+	private String _cuntry;
+	
+	private String _wheatherApiKey = "6903e279ebedda8a657b19322c04b458";
+	private String _NBPA = "http://www.nbp.pl/kursy/kursya.html";
+	private String _NBPB = "http://www.nbp.pl/kursy/kursyb.html";
+	
+    private Map<String, String> _currencies;
+	
+	public Service (String country)
+	{
+		_cuntry = country.toLowerCase();
+		_currencies = getAvailableCurrencies();
+	}
+	
+	public String getWeather(String city) throws IOException 
+	{
+		String resultJson = "";
+		URL url = new URL("https://api.openweathermap.org/data/2.5/weather?q="+ city +"&appid="+ _wheatherApiKey);
+   			
+        BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+       
+		String line;
+ 
+		while ((line = in.readLine()) != null) {
+			resultJson += line;
+		}
+	    in.close();
+
+
+		return resultJson;
+	}
+	
+	public double getRateFor(String currency) throws GetRateForException
+	{
+		currency = currency.toUpperCase();
+		
+		String resultJson = "";
+	
+		URL url;
+		try {
+			url = new URL("https://api.exchangeratesapi.io/latest?base=" + currency);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			throw new GetRateForException("Exception occured when trying to get URL.");
+		}
+   			
+        BufferedReader in;
+        
+		try {
+			in = new BufferedReader(new InputStreamReader(url.openStream()));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			throw new GetRateForException("Exception occured when trying to get stream from URL.");
+		}
+       
+		String line;
+ 
+		try {
+			
+			while ((line = in.readLine()) != null) {
+				resultJson += line;
+			}
+			in.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new GetRateForException("Exception occured when trying to read lines in input stream.");
+		}
+		
+		double PLNRate = new JSONObject(resultJson).getJSONObject("rates").getDouble("PLN");
+		if(PLNRate == 0.0) {
+			throw new GetRateForException("Cannot find rate for PLN");
+		}
+		return PLNRate;
+	}
+
+	private double GetCurrencyFromNBP(String currency, String url)
+			throws CurrencyNotFindException, IOException {
+		
+		String rowsSelector = "body > table:nth-child(2) > tbody > tr > td > center > table.pad5 > tbody > tr";
+		String currencyCodeSelector = "td";
+		
+
+		Document doc = Jsoup.connect(url).get();
+		Elements trs = doc.select(rowsSelector);
+		for (Element tr : trs) 
+		{
+			Elements tds = tr.select(currencyCodeSelector);
+			
+			String currencyCode = tds.eq(1).text().toUpperCase();
+			if (currencyCode.contains(currency)) {
+				String currencyRatio = tds.eq(2).text();
+				//System.out.println("Currency for: " + currencyCode + " is: " + currencyRatio );
+				return Double.parseDouble(currencyRatio.replace(',', '.'));
+			}
+		}
+
+		throw new CurrencyNotFindException("Currency: "+ currency +" was not find in site: " + url);
+	}
+	
+	public double getNBPRate() throws GetNBPRateException{
+
+		String currency;
+		try {
+			currency = getCurrencyFromCountry(_cuntry);
+		} catch (CurrencyNotFindException e1) {
+			e1.printStackTrace();
+			throw new GetNBPRateException("Cannot complete the task due to error in getting currency.");
+		}
+		
+		try {
+			try {
+				return GetCurrencyFromNBP(currency, _NBPA);
+			} catch (CurrencyNotFindException e) {
+				try {
+					return GetCurrencyFromNBP(currency, _NBPB);
+				} catch (CurrencyNotFindException e1) {
+					e1.printStackTrace();
+					throw new GetNBPRateException("Cannot find the currency: "+currency+" in all available resources");
+				}
+			} 
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			throw new GetNBPRateException("Cannot complete the task due to IOException when getting currency from NBP.");
+		}	
+	}
+
+	private String getCurrencyFromCountry(String country) throws CurrencyNotFindException {
+		String result = _currencies.get(country);
+		if(result != null) {
+			return result.toUpperCase();
+		}
+		throw new CurrencyNotFindException("Currency for country: " + country + " was not find in Locales");
+	}
+	private Map<String, String> getAvailableCurrencies() {
+        Locale[] locales = Locale.getAvailableLocales();
+
+        Map<String, String> currencies = new TreeMap<>();
+        for (Locale locale : locales) {
+            try {
+                currencies.put(locale.getDisplayCountry().toLowerCase(),
+                    Currency.getInstance(locale).getCurrencyCode());
+                
+                //System.out.println(locale.getDisplayCountry() +", " + Currency.getInstance(locale).getCurrencyCode());
+            } catch (Exception e) {
+            	
+            }
+        }
+        return currencies;
+    }
+	public String getCountry() {
+		return this._cuntry;
+	}
+	
+}  

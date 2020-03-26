@@ -1,0 +1,117 @@
+/**
+ *
+ *  @author Ambroziak Mateusz S16852
+ *
+ */
+
+package zad1;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+public class Service {
+	
+	private String _country;
+	
+	private String _wheatherApiKey = "6903e279ebedda8a657b19322c04b458";
+	private String NBPA = "http://www.nbp.pl/kursy/kursya.html";
+	private String NBPB = "http://www.nbp.pl/kursy/kursyb.html";
+	
+	
+	
+	public Service (String country)
+	{
+		_country = country;
+	}
+	
+	public String getWeather(String city) 
+	{
+		String resultJson = "";
+
+		String WheatherApiCall = "https://api.openweathermap.org/data/2.5/weather?q={city name}&appid={your api key}";
+		
+		try {
+			URL apiCallURL = new URL(WheatherApiCall.replace("{city name}", city)
+								.replace("{your api key}", _wheatherApiKey));
+	   
+			System.out.println("Weather URL: " + apiCallURL);
+			
+	        BufferedReader in = new BufferedReader(new InputStreamReader(apiCallURL.openStream()));
+	       
+			String line;
+     
+			while ((line = in.readLine()) != null) {
+				resultJson += line;
+			}
+		    in.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+
+		return resultJson;
+	}
+	
+	public double getRateFor(String currency)
+	{
+		currency = currency.toLowerCase();
+		
+		try {
+			double result = GetCurrencyFromNBP(currency, NBPA);
+			return result != -1 ? result : GetCurrencyFromNBP(currency, NBPB);
+		  
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+
+	private double GetCurrencyFromNBP(String currency, String url)
+			throws IOException {
+		
+		String rowsSelector = "body > table:nth-child(2) > tbody > tr > td > center > table.pad5 > tbody > tr";
+		String currencyCodeSelector = "td";
+		
+		Document doc = Jsoup.connect(url).get();
+		Elements trs = doc.select(rowsSelector);
+		for (Element tr : trs) 
+		{
+			Elements tds = tr.select(currencyCodeSelector);
+			
+			String currencyCode = tds.eq(1).text().toLowerCase();
+			if (currencyCode.contains(currency)) {
+				String currencyRatio = tds.eq(2).text();
+				System.out.println("Currency for: " + currencyCode + " is: " + currencyRatio );
+				return Double.parseDouble(currencyRatio.replace(',', '.'));
+			}
+		}
+		return -1;
+	}
+	
+	public double getNBPRate() {
+		String url = "https://api.exchangeratesapi.io/latest?base=PLN";
+		
+		Document doc = Jsoup.connect(url).get();
+		Elements trs = doc.select(rowsSelector);
+		for (Element tr : trs) 
+		{
+			Elements tds = tr.select(currencyCodeSelector);
+			
+			String currencyCode = tds.eq(1).text().toLowerCase();
+			if (currencyCode.contains(currency)) {
+				String currencyRatio = tds.eq(2).text();
+				System.out.println("Currency for: " + currencyCode + " is: " + currencyRatio );
+				return Double.parseDouble(currencyRatio.replace(',', '.'));
+			}
+		}
+		return -1d;
+	}
+	
+}  

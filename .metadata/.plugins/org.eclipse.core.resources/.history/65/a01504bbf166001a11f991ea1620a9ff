@@ -1,0 +1,155 @@
+/**
+ *
+ *  @author Ambroziak Mateusz S16852
+ *
+ */
+
+package zad1;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Currency;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+public class Service {
+	
+	private String _country;
+	
+	private String _wheatherApiKey = "6903e279ebedda8a657b19322c04b458";
+	private String _NBPA = "http://www.nbp.pl/kursy/kursya.html";
+	private String _NBPB = "http://www.nbp.pl/kursy/kursyb.html";
+	
+    private Map<String, String> _currencies;
+	
+	public Service (String country)
+	{
+		_country = country.toLowerCase();
+		_currencies = getAvailableCurrencies();
+	}
+	
+	public String getWeather(String city) 
+	{
+		String resultJson = "";
+
+		String WheatherApiCall = "https://api.openweathermap.org/data/2.5/weather?q={city name}&appid={your api key}";
+		
+		try {
+			URL url = new URL(WheatherApiCall.replace("{city name}", city)
+								.replace("{your api key}", _wheatherApiKey));
+	   			
+	        BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+	       
+			String line;
+     
+			while ((line = in.readLine()) != null) {
+				resultJson += line;
+			}
+		    in.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+
+		return resultJson;
+	}
+	
+	public double getRateFor(String currency)
+	{
+		currency = currency.toLowerCase();
+		
+		try {
+			double result = GetCurrencyFromNBP(currency, _NBPA);
+			return result != -1 ? result : GetCurrencyFromNBP(currency, _NBPB);
+		  
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+
+	private double GetCurrencyFromNBP(String currency, String url)
+			throws IOException {
+		
+		String rowsSelector = "body > table:nth-child(2) > tbody > tr > td > center > table.pad5 > tbody > tr";
+		String currencyCodeSelector = "td";
+		
+		Document doc = Jsoup.connect(url).get();
+		Elements trs = doc.select(rowsSelector);
+		for (Element tr : trs) 
+		{
+			Elements tds = tr.select(currencyCodeSelector);
+			
+			String currencyCode = tds.eq(1).text().toLowerCase();
+			if (currencyCode.contains(currency)) {
+				String currencyRatio = tds.eq(2).text();
+				System.out.println("Currency for: " + currencyCode + " is: " + currencyRatio );
+				return Double.parseDouble(currencyRatio.replace(',', '.'));
+			}
+		}
+		return -1;
+	}
+	
+	public double getNBPRate() {
+		// Zwraca kurs PLN wobec country
+		// Szukam PLN, gdzie base = country code
+		try {
+			URL url = new URL ("https://api.exchangeratesapi.io/latest?base=" + getCurrencyFromCountry(_country));
+			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+			
+			String line = "";
+			String resultJson = "";
+			
+			while ((line = in.readLine()) != null) 
+			{
+				resultJson += line;
+			}
+		    in.close();
+		    
+		    JSONObject obj = new JSONObject(resultJson);
+		    String pageName = obj.getJSONObject("pageInfo").getString("pageName");
+
+		    JSONArray arr = obj.getJSONArray("posts");
+		    for (int i = 0; i < arr.length(); i++)
+		    {
+		        String post_id = arr.getJSONObject(i).getString("post_id");
+		        ......
+		    }
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+		return -1d;
+	}
+
+	private String getCurrencyFromCountry(String country) {
+		return _currencies.get(country);
+	}
+	private Map<String, String> getAvailableCurrencies() {
+        Locale[] locales = Locale.getAvailableLocales();
+
+
+        Map<String, String> currencies = new TreeMap<>();
+        for (Locale locale : locales) {
+            try {
+                currencies.put(locale.getDisplayCountry(),
+                    Currency.getInstance(locale).getCurrencyCode());
+            } catch (Exception e) {
+            	
+            }
+        }
+        return currencies;
+    }
+	
+}  
