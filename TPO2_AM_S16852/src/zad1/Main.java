@@ -41,7 +41,7 @@ public class Main extends Application{
 		city = "Warszawa";
 		weatherJson = s.getWeather(city);
 		
-		currency = "PLN";
+		currency = "USD";
 		rate1 = s.getRateFor(currency);
 		
 		rate2 = s.getNBPRate();

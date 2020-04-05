@@ -157,12 +157,12 @@ public class Service {
 		try {
 			try {
 				double tyleToPLN = GetCurrencyFromNBP(currency, _NBPA);
-				double jedenObcyTo = 1.0/tyleToPLN;
+				double jedenObcyTo = tyleToPLN;
 				return jedenObcyTo;
 			} catch (CurrencyNotFindException e) {
 				try {
 					double tyleToPLN =  GetCurrencyFromNBP(currency, _NBPB);
-					double jedenObcyTo = 1.0/tyleToPLN;
+					double jedenObcyTo = tyleToPLN;
 					return jedenObcyTo;
 				} catch (CurrencyNotFindException e1) {
 					if(currency.toUpperCase().equals("PLN")) {
