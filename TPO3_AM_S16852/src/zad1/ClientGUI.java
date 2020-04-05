@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -13,6 +14,9 @@ import java.util.Map;
 public class ClientGUI {
     private String host;
     private int destinationPort;
+    public static int MIN_PORT = 11500; 
+    public static int MAX_PORT = 11600; 
+
     
     public ClientGUI(String host, int destinationPort) {
     	this.host = host;
@@ -27,6 +31,7 @@ public class ClientGUI {
 		for(String lang : languages){
 			System.out.println("Available language: {"+lang+"}");
 		}
+		System.out.println(client.translate("samochód","FR"));
 	}
 	public Boolean establishConnectionToMainServer() {
 		try {
@@ -78,6 +83,76 @@ public class ClientGUI {
 			ex.printStackTrace();
 		}
 		return null;
+	}
+	public String translate(String wordToTranslate, String language) {
+		String translatedWord = "";
+
+		try {
+			int listenPort = -1;
+			for	(int i = MIN_PORT; i <= MAX_PORT; i++) {
+				if(available(i)) {
+					listenPort = i;
+					break;
+				}
+			}
+			Socket clientSocket = new Socket(host, destinationPort);
+			BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+			
+			
+	    	ServerSocket serverSocket = new ServerSocket(listenPort);
+
+			String query = wordToTranslate + "," + language + "," + listenPort;
+			System.out.println("Sending query: {" + query +"}");
+			out.println(query);
+			String result = in.readLine();
+			if("Ok.".equals(result)) {
+				Socket resultSocket = serverSocket.accept();
+	       	 	BufferedReader resultIn = new BufferedReader(new InputStreamReader(resultSocket.getInputStream()));
+	            PrintWriter resultOut = new PrintWriter(resultSocket.getOutputStream(), true);
+	            
+	            translatedWord = resultIn.readLine();
+	            
+	            resultSocket.close();
+	            resultIn.close();
+	            resultOut.close();
+			}else {
+				System.out.println("Error. result: {" + result + "}");
+			}
+			serverSocket.close();
+			clientSocket.close();
+			in.close();
+			out.close();
+		}catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		return translatedWord;
+	}
+	private static boolean available(int port) {
+	    ServerSocket ss = null;
+	    DatagramSocket ds = null;
+	    try {
+	        ss = new ServerSocket(port);
+	        ss.setReuseAddress(true);
+	        ds = new DatagramSocket(port);
+	        ds.setReuseAddress(true);
+	        return true;
+	    } catch (IOException e) {
+	    } finally {
+	        if (ds != null) {
+	            ds.close();
+	        }
+
+	        if (ss != null) {
+	            try {
+	                ss.close();
+	            } catch (IOException e) {
+	                /* should not be thrown */
+	            }
+	        }
+	    }
+
+	    return false;
 	}
 	
 }

@@ -43,7 +43,7 @@ public class MainServer extends Thread{
              
              if(query.length == 3) {
             	 String polishWord = query[0];
-            	 String languageCode = query[1].toLowerCase();
+            	 String languageCode = query[1];
             	 String destinationPort = query[2];
             	 
             	 if(dictionary.containsKey(languageCode)) {           		
@@ -58,23 +58,15 @@ public class MainServer extends Thread{
 	            		System.out.println("Forwarding Message: {" + outputQuery + "}");
 	            		
 	            		languageOut.println(outputQuery);
-	            		String queryResult = LanguageIn.readLine();
-	            		
-	            		if("Ok.".equals(queryResult)) {
-	               		 	out.println("Ok.");
-	            		}else {
-	               		 	out.println("Internal Error.");
-	            		}
-               		 	
+	            		out.println("Ok.");
             		}catch(Exception ex) {
         				ex.printStackTrace();
                		 	out.println("Internal Error.");
-            		} finally {
-            			languageOut.close();
-            			LanguageIn.close();
-            			languageSocket.close();
             		}
-            		 
+        			languageSocket.close();
+        			languageOut.close();
+        			LanguageIn.close();
+            		
             	 }else {
             		 out.println("Language Not Supported.");
             	 }
