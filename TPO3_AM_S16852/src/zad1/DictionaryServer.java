@@ -66,12 +66,12 @@ public class DictionaryServer extends Thread {
                 String polishWord = query[0];
                 int destinationPort = Integer.parseInt(query[1]);
                 try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
 
-				}
+                }
                 System.out.println(destinationPort);
-                
+
                 Socket languageSocket = new Socket(host, destinationPort);
                 PrintWriter languageOut = new PrintWriter(languageSocket.getOutputStream(), true);
 
@@ -80,9 +80,11 @@ public class DictionaryServer extends Thread {
 
                     System.out.println("Translating:{" + polishWord + "} to: {" + translatedWord + "} destPort:{" + destinationPort + "}");
 
-                    languageOut.println(translatedWord);            
+                    languageOut.println(translatedWord);
                 } else {
-                    out.println("Translation Not Found.");
+                    System.out.println("Translation Not Found for:{" + polishWord + "}destPort:{" + destinationPort + "}");
+                    
+                    languageOut.println("Translation Not Found.");
                 }
                 languageOut.close();
                 languageSocket.close();
